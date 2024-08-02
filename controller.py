@@ -46,5 +46,3 @@ def insert():
 
     # Print the result's CAS metadata to the console.
     print("CAS:", insert_result.cas)
-
-insert()
