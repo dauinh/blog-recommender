@@ -3,23 +3,43 @@ from dotenv import load_dotenv
 
 from couchbase.cluster import Cluster
 from couchbase.auth import PasswordAuthenticator
-from couchbase.options import ClusterOptions, QueryOptions
+from couchbase.options import QueryOptions
 
 load_dotenv()
 
-
-cluster = Cluster("couchbase://localhost",
-                  authenticator=PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD")))
+pa = PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD"))
+cluster = Cluster("couchbase://localhost", authenticator=pa)
 inventory = cluster.bucket("personalized-blogs").scope("inventory")
 
 
 def get_all(collection: str = "user" or "blog"):
     result = cluster.query(
-        f"SELECT * FROM `personalized-blogs`.`inventory`.`{collection}`", QueryOptions(metrics=True))
+        f"SELECT * FROM `personalized-blogs`.`inventory`.`{collection}`"
+    )
     try:
-        return result
+        return list(result)
     except Exception:
-        print('No rows found')
+        print("No rows found")
+
+
+def get_user_by_id(user_id):
+    result = cluster.query(
+        f"""SELECT * FROM `personalized-blogs`.`inventory`.`user` WHERE id = {user_id}""")
+    return list(result)[0]
+
+
+def get_recommendations(user_id):
+    user_profile = get_user_by_id(user_id)["user"]
+    # preferences = user_profile["preferences"]
+    # history = user_profile["history"]
+    result = cluster.query(
+        """SELECT * FROM `personalized-blogs`.`inventory`.`blog` 
+            WHERE category IN $preferences AND id NOT IN $history""",
+            QueryOptions(named_parameters={
+                "preferences": user_profile["preferences"],
+                "history": user_profile["history"]
+            }))
+    return list(result)
 
 
 def seeding():
@@ -28,46 +48,46 @@ def seeding():
             "id": 1,
             "name": "human",
             "preferences": ["technology", "cooking"],
-            "history": ["article1", "article2"]
+            "history": [1, 2],
         },
         "user2": {
             "id": 2,
             "name": "alien",
             "preferences": ["technology", "earth"],
-            "history": ["article1", "article3"]
-        }
+            "history": [1, 3],
+        },
     }
     blogs = {
         "article1": {
-            "id": "1",
+            "id": 1,
             "title": "Latest Tech Trends",
             "category": "technology",
-            "tags": ["AI", "ML", "innovation"]
+            "tags": ["AI", "ML", "innovation"],
         },
         "article2": {
-            "id": "2",
+            "id": 2,
             "title": "How to create your own pasta recipes",
             "category": "cooking",
-            "tags": ["pasta", "sauces"]
+            "tags": ["pasta", "sauces"],
         },
         "article3": {
-            "id": "3",
+            "id": 3,
             "title": "Future of Earth",
             "category": "earth",
-            "tags": ["global warming", "space exploration"]
+            "tags": ["global warming", "space exploration"],
         },
         "article4": {
-            "id": "4",
+            "id": 4,
             "title": "Understanding Arts",
             "category": "arts",
-            "tags": ["visual arts", "perfomance arts"]
+            "tags": ["visual arts", "perfomance arts"],
         },
         "article5": {
-            "id": "5",
+            "id": 5,
             "title": "Programming 101",
             "category": "technology",
-            "tags": ["Python"]
-        }
+            "tags": ["Python"],
+        },
     }
     user_collection = inventory.collection("user")
     user_collection.insert_multi(users)
