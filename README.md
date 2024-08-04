@@ -72,4 +72,10 @@ CREATE INDEX `def_blog_category` ON `personalized-blogs`.`inventory`.`blog`(`cat
 
 1. Install packages by running `pip install -r requirements.txt`
 
-2. In project directory, run `fastapi dev main.py`
+2. Run your Couchbase server
+
+3. In project directory, run `fastapi dev main.py`
+
+4. Open another terminal tab and run `streamlit run interface.py`
+
+5. Try out the app!
