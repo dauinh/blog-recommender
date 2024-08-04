@@ -1,5 +1,11 @@
 # Personalized Blogs
 
+
+
+https://github.com/user-attachments/assets/22d8b27a-6bce-40ba-9fdd-5b4cbdb38567
+
+
+
 ### Setting up Couchbase
 
 1. Install Couchbase (local) server using [official guide](https://docs.couchbase.com/server/current/getting-started/do-a-quick-install.html)
