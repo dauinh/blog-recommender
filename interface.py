@@ -1,26 +1,33 @@
 # https://discuss.streamlit.io/t/how-to-add-delete-a-new-row-in-data-editor-in-streamlit/70608
 import streamlit as st
 import pandas as pd
-
-
-list = [{'name': 'Love', 'check': True},
-        {'name': 'Smells Like Teen Spirit', 'check': True},
-        {'name': 'Lithium', 'check': True},
-        {'name': 'All Apologies', 'check': True},
-        {'name': 'Stay Away', 'check': True}]
-
-
-# Create a variable to hold the dataframe. Initialize it with the given list.
-if 'df' not in st.session_state:
-    st.session_state.df = pd.DataFrame(list)
+import requests
 
 
 st.title('Blog Recommender System')
 
+# Prompt user id
+st.subheader('First, who are you?')
+id = st.selectbox('Choose your id', [1, 2])
+# Get user preferences
+res = requests.get(url=f"http://127.0.0.1:8000/users/{id}").json()
+preferences = res['user']['preferences']
+rows = []
+for p in preferences:
+    rows.append({'topic': p, 'check': True})
+# Create a variable to hold the dataframe. Initialize it with the given list.
+if 'df' not in st.session_state:
+    st.session_state.df = pd.DataFrame(rows)
+
+# Recommend articles
 st.subheader('Read your favorite article right here!')
 
 if st.button('Get recommendations'):
-    st.write('Enjoy your read')
+    res = requests.get(url=f"http://127.0.0.1:8000/users/{id}/recommendations").json()
+    print(res)
+    for r in res:
+        article = r['blog']
+        st.write(article['title'])
 
 
 st.subheader('Make changes to your preferences')
