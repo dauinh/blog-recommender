@@ -1,20 +1,39 @@
 import os
+import logging
+import traceback
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+import couchbase
 from couchbase.cluster import Cluster
 from couchbase.auth import PasswordAuthenticator
-from couchbase.options import QueryOptions
+from couchbase.options import QueryOptions, ClusterOptions
 
 load_dotenv()
+logging.basicConfig(filename=f'logs/{datetime.now().strftime('%Y_%m_%d_%I_%M%p')}.log',
+                    filemode='w', 
+                    level=logging.DEBUG,
+                    format='%(levelname)s::%(asctime)s::%(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
-pa = PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD"))
-cluster = Cluster("couchbase://localhost", authenticator=pa)
-inventory = cluster.bucket("personalized-blogs").scope("inventory")
+logger = logging.getLogger()
+couchbase.configure_logging(logger.name, level=logger.level)
+
+
+auth = ClusterOptions(PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD")))
+cluster = Cluster(os.environ.get("ENDPOINT"), auth)
+
+# Wait until the cluster is ready for use.
+cluster.wait_until_ready(timedelta(seconds=3))
+
+logger.info('Cluster ready.')
+
+inventory = cluster.bucket("blog-recommender").scope("inventory")
 
 
 def get_all(collection: str = "user" or "blog"):
     result = cluster.query(
-        f"SELECT * FROM `personalized-blogs`.`inventory`.`{collection}`"
+        f"SELECT * FROM `blog-recommender`.`inventory`.`{collection}`"
     )
     try:
         return list(result)
@@ -24,16 +43,14 @@ def get_all(collection: str = "user" or "blog"):
 
 def get_user_by_id(user_id):
     result = cluster.query(
-        f"""SELECT * FROM `personalized-blogs`.`inventory`.`user` WHERE id = {user_id}""")
+        f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}""")
     return list(result)[0]
 
 
 def get_recommendations(user_id):
     user_profile = get_user_by_id(user_id)["user"]
-    # preferences = user_profile["preferences"]
-    # history = user_profile["history"]
     result = cluster.query(
-        """SELECT * FROM `personalized-blogs`.`inventory`.`blog` 
+        """SELECT * FROM `blog-recommender`.`inventory`.`blog` 
             WHERE category IN $preferences AND id NOT IN $history""",
             QueryOptions(named_parameters={
                 "preferences": user_profile["preferences"],
@@ -100,5 +117,5 @@ def seeding():
         print("Inserted Document:", key)
 
 
-if __name__ == "__main__":
-    seeding()
+# if __name__ == "__main__":
+#     seeding()
