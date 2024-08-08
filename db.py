@@ -14,7 +14,12 @@ logger = logging.getLogger()
 
 auth = ClusterOptions(PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD")))
 cluster = Cluster(os.environ.get("ENDPOINT"), auth)
-
+env = f'''----------------------------\nenv variables\n
+            {os.environ.get("USERNAME")}
+            {os.environ.get("PASSWORD")}
+            {os.environ.get("ENDPOINT")}\n'''
+print(env)
+logger.info(env)
 # Wait until the cluster is ready for use.
 cluster.wait_until_ready(timedelta(seconds=3))
 
