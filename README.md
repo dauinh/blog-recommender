@@ -79,17 +79,3 @@ CREATE INDEX `def_blog_category` ON `blog-recommender`.`inventory`.`blog`(`categ
 4. Open another terminal tab and run `streamlit run interface.py`
 
 5. Try out the app!
-
-https://cloud.google.com/artifact-registry/docs/docker/store-docker-container-images
-```
-docker image tag blog-recommender-api:latest \
-us-west1-docker.pkg.dev/blog-recommender-431918/demo/blog-recommender-api:latest
-```
-
-
-https://cloud.google.com/run/docs/deploying#gcloud
-```
-gcloud run deploy blog-recommender-api \
---image us-west1-docker.pkg.dev/blog-recommender-431918/demo/blog-recommender-api:latest \
---platform managed --allow-unauthenticated
-```
