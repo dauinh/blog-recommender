@@ -3,7 +3,6 @@ ENV PYTHONUNBUFFERED=True
 
 ENV APP_HOME=/app
 WORKDIR $APP_HOME
-COPY .env ./
 COPY . ./
 
 RUN pip install --upgrade pip
