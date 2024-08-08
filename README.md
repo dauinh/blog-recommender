@@ -55,13 +55,13 @@ cluster
 Go to Couchbase server query and excute following:
 
 ```user collection
-CREATE PRIMARY INDEX `def_primary_user` ON `personalized-blogs`.`inventory`.`user`;
-CREATE INDEX `def_user_name` ON `personalized-blogs`.`inventory`.`user`(`name`);
+CREATE PRIMARY INDEX `def_primary_user` ON `blog-recommender`.`inventory`.`user`;
+CREATE INDEX `def_user_name` ON `blog-recommender`.`inventory`.`user`(`name`);
 ```
 ```blog collection
-CREATE PRIMARY INDEX `def_primary_blog` ON `personalized-blogs`.`inventory`.`blog`;
-CREATE INDEX `def_blog_title` ON `personalized-blogs`.`inventory`.`blog`(`title`);
-CREATE INDEX `def_blog_category` ON `personalized-blogs`.`inventory`.`blog`(`category`);
+CREATE PRIMARY INDEX `def_primary_blog` ON `blog-recommender`.`inventory`.`blog`;
+CREATE INDEX `def_blog_title` ON `blog-recommender`.`inventory`.`blog`(`title`);
+CREATE INDEX `def_blog_category` ON `blog-recommender`.`inventory`.`blog`(`category`);
 ```
 
 ### Running application

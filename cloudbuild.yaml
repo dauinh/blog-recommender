@@ -1,0 +1,7 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/conncoll.edu/couchbase-431904/latest', '.']
+  env:
+    - 'USERNAME=${_USERNAME}'
+    - 'PASSWORD=${_PASSWORD}'
+    - 'ENDPOINT=${_ENDPOINT}'

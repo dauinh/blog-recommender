@@ -10,7 +10,7 @@ from couchbase.auth import PasswordAuthenticator
 from couchbase.options import QueryOptions, ClusterOptions
 
 load_dotenv()
-logging.basicConfig(filename=f'logs/{datetime.now().strftime('%Y_%m_%d_%I_%M%p')}.log',
+logging.basicConfig(filename=f'logs/{datetime.now().strftime("%Y_%m_%d_%I_%M%p")}.log',
                     filemode='w', 
                     level=logging.DEBUG,
                     format='%(levelname)s::%(asctime)s::%(message)s',
