@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from db import get_all, get_user_by_id, get_user_history, get_recommendations
+from db import get_all, get_user_by_id, get_user_history, get_recommendations, update_preference
 
 app = FastAPI()
 
@@ -32,6 +32,11 @@ def blog_history(user_id):
 @app.get("/users/{user_id}/recommendations")
 def recommendations(user_id):
     return get_recommendations(user_id)
+
+
+@app.put("/users/{user_id}/")
+def preference(user_id, preference):
+    return update_preference(user_id, preference)
 
 
 @app.get("/blogs")

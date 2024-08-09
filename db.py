@@ -60,7 +60,7 @@ def get_user_history(user_id):
 def get_recommendations(user_id):
     user_profile = get_user_by_id(user_id)["user"]
     result = cluster.query(
-        """SELECT * FROM `blog-recommender`.`inventory`.`blog` 
+        """SELECT * FROM `blog-recommender`.`inventory`.`blog`
             WHERE category IN $preferences AND id NOT IN $history""",
         QueryOptions(
             named_parameters={
@@ -73,6 +73,19 @@ def get_recommendations(user_id):
         return list(result)
     except Exception:
         print("No rows found")
+
+
+def update_preference(user_id, input):
+    result = cluster.query(
+        f"""UPDATE `blog-recommender`.`inventory`.`user` u
+            SET u.preferences = ARRAY_APPEND(u.preferences, "{input}")
+            WHERE u.id = {user_id}
+            RETURNING u.preferences;"""
+    )
+    try:
+        return result
+    except Exception:
+        print("Preference cannot be updated")
 
 
 def seeding():
