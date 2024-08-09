@@ -3,25 +3,32 @@ import streamlit as st
 import pandas as pd
 import requests
 
+try:
+    user_id = st.session_state['user_id']
+    res = requests.get(url=f"http://127.0.0.1:8000/users/{st.session_state.user_id}").json()
+    user_profile = res['user']
 
-# Prompt user id
-st.subheader('First, who are you?')
-id = st.selectbox('Choose your id', [1, 2])
+    st.title(f"Welcome to your profile, {user_profile['name']}")
+    rows = []
+    for p in user_profile['preferences']:
+        rows.append({'topic': p, 'check': True})
+
+except KeyError:
+    st.warning("You are not logged in!")
 
 # Get user preferences
-res = requests.get(url=f"http://127.0.0.1:8000/users/{id}").json()
-preferences = res['user']['preferences']
-rows = []
-for p in preferences:
-    rows.append({'topic': p})
-    # rows.append({'topic': p, 'check': True})
+# res = requests.get(url=f"http://127.0.0.1:8000/users/{st.session_state.user_id}").json()
+# preferences = res['user']['preferences']
+# rows = []
+# for p in preferences:
+#     rows.append({'topic': p})
+#     # rows.append({'topic': p, 'check': True})
 
-# Save current user info in session state
-st.session_state.user_id = id
-st.session_state.df = pd.DataFrame(rows)
-# Display preferences
-st.caption('Your preferences')
-st.table(st.session_state.df)
+# # Save current user info in session state
+# st.session_state.df = pd.DataFrame(rows)
+# # Display preferences
+# st.caption('Your preferences')
+# st.table(st.session_state.df)
 
 
 
