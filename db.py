@@ -11,12 +11,6 @@ from couchbase.options import QueryOptions, ClusterOptions
 
 load_dotenv()
 logger = logging.getLogger()
-env = f'''----------------------------\nenv variables\n
-            {os.environ.get("USERNAME")}
-            {os.environ.get("PASSWORD")}
-            {os.environ.get("ENDPOINT")}\n'''
-print(env)
-logger.info(env)
 
 auth = ClusterOptions(PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD")))
 cluster = Cluster(os.environ.get("ENDPOINT"), auth)
