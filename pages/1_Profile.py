@@ -1,13 +1,4 @@
 import streamlit as st
-import pandas as pd
-import requests
-
-try:
-    user_id = st.session_state['user_id']
-    res = requests.get(url=f"http://127.0.0.1:8000/users/{st.session_state.user_id}").json()
-    st.session_state.user_profile = res['user']
-except KeyError or TypeError:
-    st.error("You are not logged in!")
 
 
 if 'user_profile' in st.session_state:
@@ -25,3 +16,5 @@ if 'user_profile' in st.session_state:
     if add:
         st.info(f"`{add}` has been added to your preferences!")
         st.balloons()
+else:
+    st.error("You are not logged in!")

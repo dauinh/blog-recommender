@@ -14,15 +14,18 @@ with st.popover("Quick 'login'"):
     st.markdown("Hello there 👋")
     id = st.text_input('What is your user id?')
     
-    response = requests.get(url=f"http://127.0.0.1:8000/users/{id}")
-    if response.status_code == 200:
-        st.session_state.user_id = id
-    else:
-        st.error("User not found")
+    if id:
+        response = requests.get(url=f"http://127.0.0.1:8000/users/{id}")
+        if response.status_code == 200:
+            res = response.json()
+            st.session_state.user_profile = res['user']
+        else:
+            st.error("User not found")
 
 
 # Recommend articles
-if st.session_state.user_id:
+if 'user_profile' in st.session_state:
+    id = st.session_state['user_profile']['id']
     st.header('Read your favorite article right here!')
 
     if st.button('Get recommendations'):
