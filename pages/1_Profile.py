@@ -1,3 +1,5 @@
+import requests
+
 import streamlit as st
 
 
@@ -14,7 +16,15 @@ if "user_profile" in st.session_state:
     # Modify preferences
     add = st.text_input("Add to your preferences")
     if add:
-        st.info(f"`{add}` has been added to your preferences!")
-        st.balloons()
+        response = requests.put(
+            url=f"http://127.0.0.1:8000/users/{user_profile["id"]}/",
+            params={"preference": add}
+        )
+        if response.status_code == 200:
+            st.info(f"`{add}` has been added to your preferences!")
+            st.balloons()
+        else:
+            st.error("Error saving your preference")
+        
 else:
     st.error("You are not logged in!")
