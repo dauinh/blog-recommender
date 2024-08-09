@@ -1,34 +1,28 @@
 import os
 import logging
-import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from dotenv import load_dotenv
 
-import couchbase
 from couchbase.cluster import Cluster
 from couchbase.auth import PasswordAuthenticator
 from couchbase.options import QueryOptions, ClusterOptions
 
 load_dotenv()
-logging.basicConfig(filename=f'logs/{datetime.now().strftime("%Y_%m_%d_%I_%M%p")}.log',
-                    filemode='w', 
-                    level=logging.DEBUG,
-                    format='%(levelname)s::%(asctime)s::%(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
-
 logger = logging.getLogger()
-couchbase.configure_logging(logger.name, level=logger.level)
+username = "admin"
+password = "B8r~*f7RV5)$UFj"
+endpoint = "couchbase://localhost"
+bucket_name = "blog-recommender"
 
-
-auth = ClusterOptions(PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD")))
-cluster = Cluster(os.environ.get("ENDPOINT"), auth)
+auth = ClusterOptions(PasswordAuthenticator(username, password))
+cluster = Cluster(endpoint, auth)
 
 # Wait until the cluster is ready for use.
 cluster.wait_until_ready(timedelta(seconds=3))
 
 logger.info('Cluster ready.')
 
-inventory = cluster.bucket("blog-recommender").scope("inventory")
+inventory = cluster.bucket(bucket_name).scope("inventory")
 
 
 def get_all(collection: str = "user" or "blog"):
@@ -75,31 +69,31 @@ def seeding():
         },
     }
     blogs = {
-        "article1": {
+        "blog1": {
             "id": 1,
             "title": "Latest Tech Trends",
             "category": "technology",
             "tags": ["AI", "ML", "innovation"],
         },
-        "article2": {
+        "blog2": {
             "id": 2,
             "title": "How to create your own pasta recipes",
             "category": "cooking",
             "tags": ["pasta", "sauces"],
         },
-        "article3": {
+        "blog3": {
             "id": 3,
             "title": "Future of Earth",
             "category": "earth",
             "tags": ["global warming", "space exploration"],
         },
-        "article4": {
+        "blog4": {
             "id": 4,
             "title": "Understanding Arts",
             "category": "arts",
             "tags": ["visual arts", "perfomance arts"],
         },
-        "article5": {
+        "blog5": {
             "id": 5,
             "title": "Programming 101",
             "category": "technology",

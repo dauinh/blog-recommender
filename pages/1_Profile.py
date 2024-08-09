@@ -4,9 +4,6 @@ import pandas as pd
 import requests
 
 
-st.title('Blog Recommender System')
-
-
 # Prompt user id
 st.subheader('First, who are you?')
 id = st.selectbox('Choose your id', [1, 2])
@@ -19,26 +16,19 @@ for p in preferences:
     rows.append({'topic': p})
     # rows.append({'topic': p, 'check': True})
 
-# Save current user preferences in session state
+# Save current user info in session state
+st.session_state.user_id = id
 st.session_state.df = pd.DataFrame(rows)
 # Display preferences
 st.caption('Your preferences')
 st.table(st.session_state.df)
 
 
-# Recommend articles
-st.subheader('Read your favorite article right here!')
 
-if st.button('Get recommendations'):
-    res = requests.get(url=f"http://127.0.0.1:8000/users/{id}/recommendations").json()
-    print('\ncurrent artilces\n', res)
-    for r in res:
-        article = r['blog']
-        st.write(article['title'])
 
 
 # Modify preferences
-print('\nsession state\n', st.session_state)
+# print('\nsession state\n', st.session_state)
 # st.subheader('Make changes to your preferences')
 
 # col1, col2 = st.columns([2, 1], gap='medium')
