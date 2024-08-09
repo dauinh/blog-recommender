@@ -44,6 +44,17 @@ def get_user_by_id(user_id):
         print("User not found")
 
 
+def get_user_history(user_id):
+    result = cluster.query(
+        f"""SELECT blog
+            FROM `blog-recommender`.`inventory`.`blog` blog, `blog-recommender`.`inventory`.`user` u
+            WHERE blog.id IN u.history AND u.id == {user_id}""")
+    try:
+        return list(result)
+    except IndexError:
+        print("User not found")
+
+
 def get_recommendations(user_id):
     user_profile = get_user_by_id(user_id)["user"]
     result = cluster.query(

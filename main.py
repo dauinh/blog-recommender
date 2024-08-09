@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from db import get_all, get_user_by_id, get_recommendations
+from db import get_all, get_user_by_id, get_user_history, get_recommendations
 
 app = FastAPI()
 
@@ -19,6 +19,14 @@ def user_by_id(user_id):
     if not user:
         return {"message": f"User with id {user_id} not found"}
     return user
+
+
+@app.get("/users/{user_id}/history")
+def blog_history(user_id):
+    history = get_user_history(user_id)
+    if not history:
+        return {"message": f"User with id {user_id} has no history"}
+    return history
 
 
 @app.get("/users/{user_id}/recommendations")
