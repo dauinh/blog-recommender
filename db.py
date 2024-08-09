@@ -20,7 +20,7 @@ cluster = Cluster(endpoint, auth)
 # Wait until the cluster is ready for use.
 cluster.wait_until_ready(timedelta(seconds=3))
 
-logger.info('Cluster ready.')
+logger.info("Cluster ready.")
 
 inventory = cluster.bucket(bucket_name).scope("inventory")
 
@@ -37,7 +37,8 @@ def get_all(collection: str = "user" or "blog"):
 
 def get_user_by_id(user_id):
     result = cluster.query(
-            f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}""")
+        f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}"""
+    )
     try:
         return list(result)[0]
     except IndexError:
@@ -48,7 +49,8 @@ def get_user_history(user_id):
     result = cluster.query(
         f"""SELECT blog
             FROM `blog-recommender`.`inventory`.`blog` blog, `blog-recommender`.`inventory`.`user` u
-            WHERE blog.id IN u.history AND u.id == {user_id}""")
+            WHERE blog.id IN u.history AND u.id == {user_id}"""
+    )
     try:
         return list(result)
     except IndexError:
@@ -60,10 +62,13 @@ def get_recommendations(user_id):
     result = cluster.query(
         """SELECT * FROM `blog-recommender`.`inventory`.`blog` 
             WHERE category IN $preferences AND id NOT IN $history""",
-            QueryOptions(named_parameters={
+        QueryOptions(
+            named_parameters={
                 "preferences": user_profile["preferences"],
-                "history": user_profile["history"]
-            }))
+                "history": user_profile["history"],
+            }
+        ),
+    )
     try:
         return list(result)
     except Exception:

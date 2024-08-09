@@ -74,8 +74,8 @@ CREATE INDEX `def_blog_category` ON `blog-recommender`.`inventory`.`blog`(`categ
 
 2. Run your Couchbase server
 
-3. In project directory, run `fastapi dev main.py`
+3. In project directory, run `uvicorn main:app`
 
-4. Open another terminal tab and run `streamlit run interface.py`
+4. Open another terminal tab and run `streamlit run Home.py`
 
 5. Try out the app!
