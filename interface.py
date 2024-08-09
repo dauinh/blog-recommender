@@ -1,4 +1,9 @@
 # https://discuss.streamlit.io/t/how-to-add-delete-a-new-row-in-data-editor-in-streamlit/70608
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import streamlit as st
 import pandas as pd
 import requests
@@ -12,7 +17,7 @@ st.subheader('First, who are you?')
 id = st.selectbox('Choose your id', [1, 2])
 
 # Get user preferences
-res = requests.get(url=f"http://127.0.0.1:8000/users/{id}").json()
+res = requests.get(url=f"{os.environ.get('APP_URL')}/users/{id}").json()
 preferences = res['user']['preferences']
 rows = []
 for p in preferences:
@@ -30,7 +35,7 @@ st.table(st.session_state.df)
 st.subheader('Read your favorite article right here!')
 
 if st.button('Get recommendations'):
-    res = requests.get(url=f"http://127.0.0.1:8000/users/{id}/recommendations").json()
+    res = requests.get(url=f"{os.environ.get('APP_URL')}/users/{id}/recommendations").json()
     print('\ncurrent artilces\n', res)
     for r in res:
         article = r['blog']
