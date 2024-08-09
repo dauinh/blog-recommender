@@ -37,8 +37,11 @@ def get_all(collection: str = "user" or "blog"):
 
 def get_user_by_id(user_id):
     result = cluster.query(
-        f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}""")
-    return list(result)[0]
+            f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}""")
+    try:
+        return list(result)[0]
+    except IndexError:
+        print("User not found")
 
 
 def get_recommendations(user_id):
@@ -50,7 +53,10 @@ def get_recommendations(user_id):
                 "preferences": user_profile["preferences"],
                 "history": user_profile["history"]
             }))
-    return list(result)
+    try:
+        return list(result)
+    except Exception:
+        print("No rows found")
 
 
 def seeding():
@@ -59,13 +65,13 @@ def seeding():
             "id": 1,
             "name": "human",
             "preferences": ["technology", "cooking"],
-            "history": [1, 2],
+            "history": [1],
         },
         "user2": {
             "id": 2,
             "name": "alien",
             "preferences": ["technology", "earth"],
-            "history": [1, 3],
+            "history": [3],
         },
     }
     blogs = {
@@ -111,5 +117,5 @@ def seeding():
         print("Inserted Document:", key)
 
 
-# if __name__ == "__main__":
-#     seeding()
+if __name__ == "__main__":
+    seeding()
