@@ -32,7 +32,7 @@ if "user_profile" in st.session_state:
         res = requests.get(
             url=f"http://127.0.0.1:8000/users/{id}/recommendations"
         ).json()
-        print("\ncurrent artilces\n", res)
         for r in res:
             article = r["blog"]
             st.subheader(article["title"])
+            st.caption(article["category"])
