@@ -56,11 +56,11 @@ Go to Couchbase server query and excute following:
 
 ```user collection
 CREATE PRIMARY INDEX `def_primary_user` ON `blog-recommender`.`inventory`.`user`;
-CREATE INDEX `def_user_name` ON `blog-recommender`.`inventory`.`user`(`name`);
+CREATE INDEX `def_user_history` ON `blog-recommender`.`inventory`.`user`(`history`);
 ```
 ```blog collection
 CREATE PRIMARY INDEX `def_primary_blog` ON `blog-recommender`.`inventory`.`blog`;
-CREATE INDEX `def_blog_title` ON `blog-recommender`.`inventory`.`blog`(`title`);
+CREATE INDEX `def_blog_id` ON `blog-recommender`.`inventory`.`blog`(`id`);
 CREATE INDEX `def_blog_category` ON `blog-recommender`.`inventory`.`blog`(`category`);
 ```
 
@@ -74,8 +74,8 @@ CREATE INDEX `def_blog_category` ON `blog-recommender`.`inventory`.`blog`(`categ
 
 2. Run your Couchbase server
 
-3. In project directory, run `fastapi dev main.py`
+3. In project directory, run `uvicorn main:app`
 
-4. Open another terminal tab and run `streamlit run interface.py`
+4. Open another terminal tab and run `streamlit run Home.py`
 
 5. Try out the app!

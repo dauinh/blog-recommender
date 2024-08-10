@@ -1,26 +1,28 @@
 import os
 import logging
-import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from dotenv import load_dotenv
 
-import couchbase
 from couchbase.cluster import Cluster
 from couchbase.auth import PasswordAuthenticator
 from couchbase.options import QueryOptions, ClusterOptions
 
 load_dotenv()
 logger = logging.getLogger()
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
+endpoint = os.environ.get("ENDPOINT")
+bucket_name = "blog-recommender"
 
-auth = ClusterOptions(PasswordAuthenticator(os.environ.get("USERNAME"), os.environ.get("PASSWORD")))
-cluster = Cluster(os.environ.get("ENDPOINT"), auth)
+auth = ClusterOptions(PasswordAuthenticator(username, password))
+cluster = Cluster(endpoint, auth)
 
 # Wait until the cluster is ready for use.
 cluster.wait_until_ready(timedelta(seconds=3))
 
-logger.info('Cluster ready.')
+logger.info("Cluster ready.")
 
-inventory = cluster.bucket("blog-recommender").scope("inventory")
+inventory = cluster.bucket(bucket_name).scope("inventory")
 
 
 def get_all(collection: str = "user" or "blog"):
@@ -35,20 +37,55 @@ def get_all(collection: str = "user" or "blog"):
 
 def get_user_by_id(user_id):
     result = cluster.query(
-        f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}""")
-    return list(result)[0]
+        f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}"""
+    )
+    try:
+        return list(result)[0]
+    except IndexError:
+        print("User not found")
+
+
+def get_user_history(user_id):
+    result = cluster.query(
+        f"""SELECT blog
+            FROM `blog-recommender`.`inventory`.`blog` blog, `blog-recommender`.`inventory`.`user` u
+            WHERE blog.id IN u.history AND u.id == {user_id}"""
+    )
+    try:
+        return list(result)
+    except IndexError:
+        print("User not found")
 
 
 def get_recommendations(user_id):
     user_profile = get_user_by_id(user_id)["user"]
     result = cluster.query(
-        """SELECT * FROM `blog-recommender`.`inventory`.`blog` 
+        """SELECT * FROM `blog-recommender`.`inventory`.`blog`
             WHERE category IN $preferences AND id NOT IN $history""",
-            QueryOptions(named_parameters={
+        QueryOptions(
+            named_parameters={
                 "preferences": user_profile["preferences"],
-                "history": user_profile["history"]
-            }))
-    return list(result)
+                "history": user_profile["history"],
+            }
+        ),
+    )
+    try:
+        return list(result)
+    except Exception:
+        print("No rows found")
+
+
+def update_preference(user_id, input):
+    result = cluster.query(
+        f"""UPDATE `blog-recommender`.`inventory`.`user` u
+            SET u.preferences = ARRAY_APPEND(u.preferences, "{input}")
+            WHERE u.id = {user_id}
+            RETURNING u.preferences;"""
+    )
+    try:
+        return result
+    except Exception:
+        print("Preference cannot be updated")
 
 
 def seeding():
@@ -57,41 +94,41 @@ def seeding():
             "id": 1,
             "name": "human",
             "preferences": ["technology", "cooking"],
-            "history": [1, 2],
+            "history": [1],
         },
         "user2": {
             "id": 2,
             "name": "alien",
             "preferences": ["technology", "earth"],
-            "history": [1, 3],
+            "history": [3],
         },
     }
     blogs = {
-        "article1": {
+        "blog1": {
             "id": 1,
             "title": "Latest Tech Trends",
             "category": "technology",
             "tags": ["AI", "ML", "innovation"],
         },
-        "article2": {
+        "blog2": {
             "id": 2,
             "title": "How to create your own pasta recipes",
             "category": "cooking",
             "tags": ["pasta", "sauces"],
         },
-        "article3": {
+        "blog3": {
             "id": 3,
             "title": "Future of Earth",
             "category": "earth",
             "tags": ["global warming", "space exploration"],
         },
-        "article4": {
+        "blog4": {
             "id": 4,
             "title": "Understanding Arts",
             "category": "arts",
             "tags": ["visual arts", "perfomance arts"],
         },
-        "article5": {
+        "blog5": {
             "id": 5,
             "title": "Programming 101",
             "category": "technology",
@@ -109,5 +146,5 @@ def seeding():
         print("Inserted Document:", key)
 
 
-# if __name__ == "__main__":
-#     seeding()
+if __name__ == "__main__":
+    seeding()
