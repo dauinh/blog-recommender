@@ -56,12 +56,12 @@ Go to Couchbase server query and excute following:
 
 ```user collection
 CREATE PRIMARY INDEX `def_primary_user` ON `blog-recommender`.`inventory`.`user`;
-CREATE INDEX `def_user_name` ON `blog-recommender`.`inventory`.`user`(`name`);
+CREATE INDEX `def_user_id` ON `blog-recommender`.`inventory`.`user`(`id`);
 ```
 ```blog collection
 CREATE PRIMARY INDEX `def_primary_blog` ON `blog-recommender`.`inventory`.`blog`;
-CREATE INDEX `def_blog_title` ON `blog-recommender`.`inventory`.`blog`(`title`);
-CREATE INDEX `def_blog_category` ON `blog-recommender`.`inventory`.`blog`(`category`);
+CREATE INDEX `def_blog_id` ON `blog-recommender`.`inventory`.`blog`(`id`);
+CREATE INDEX `def_blog_topic` ON `blog-recommender`.`inventory`.`blog`(`topic`);
 ```
 
 ### Running application

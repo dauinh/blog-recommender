@@ -72,31 +72,31 @@ def seeding():
         "blog1": {
             "id": 1,
             "title": "Latest Tech Trends",
-            "category": "technology",
+            "topic": "technology",
             "tags": ["AI", "ML", "innovation"],
         },
         "blog2": {
             "id": 2,
             "title": "How to create your own pasta recipes",
-            "category": "cooking",
+            "topic": "cooking",
             "tags": ["pasta", "sauces"],
         },
         "blog3": {
             "id": 3,
             "title": "Future of Earth",
-            "category": "earth",
+            "topic": "earth",
             "tags": ["global warming", "space exploration"],
         },
         "blog4": {
             "id": 4,
             "title": "Understanding Arts",
-            "category": "arts",
+            "topic": "arts",
             "tags": ["visual arts", "perfomance arts"],
         },
         "blog5": {
             "id": 5,
             "title": "Programming 101",
-            "category": "technology",
+            "topic": "technology",
             "tags": ["Python"],
         },
     }
