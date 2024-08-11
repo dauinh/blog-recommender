@@ -9,9 +9,9 @@ from couchbase.options import QueryOptions, ClusterOptions
 
 load_dotenv()
 logger = logging.getLogger()
-username = "admin"
-password = "B8r~*f7RV5)$UFj"
-endpoint = "couchbase://localhost"
+username = os.environ.get("USERNAME")
+password = os.environ.get("PASSWORD")
+endpoint = os.environ.get("ENDPOINT")
 bucket_name = "blog-recommender"
 
 auth = ClusterOptions(PasswordAuthenticator(username, password))
