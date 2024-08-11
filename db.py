@@ -61,7 +61,7 @@ def get_recommendations(user_id):
     user_profile = get_user_by_id(user_id)["user"]
     result = cluster.query(
         """SELECT * FROM `blog-recommender`.`inventory`.`blog`
-            WHERE topic IN $topics AND id NOT IN $history""",
+            WHERE topic IN $topics AND blog_id NOT IN $history""",
         QueryOptions(
             named_parameters={
                 "topics": user_profile["topics"],

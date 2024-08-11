@@ -40,7 +40,6 @@ if 'user_profile' in st.session_state:
                 url=f"{os.environ.get("APP_URL")}/users/{id}/?preference={add}"
             )
             if response:
-                print(response)
                 noti()
             else:
                 st.error("An error has occurred. Try again!")
