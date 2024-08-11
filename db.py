@@ -37,7 +37,7 @@ def get_all(collection: str = "user" or "blog"):
 
 def get_user_by_id(user_id):
     result = cluster.query(
-        f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE id = {user_id}"""
+        f"""SELECT * FROM `blog-recommender`.`inventory`.`user` WHERE user_id = {user_id}"""
     )
     try:
         return list(result)[0]
@@ -49,7 +49,7 @@ def get_user_history(user_id):
     result = cluster.query(
         f"""SELECT blog
             FROM `blog-recommender`.`inventory`.`blog` blog, `blog-recommender`.`inventory`.`user` u
-            WHERE blog.id IN u.history AND u.id == {user_id}"""
+            WHERE blog.blog_id IN u.history AND u.user_id == {user_id}"""
     )
     try:
         return list(result)
@@ -61,10 +61,10 @@ def get_recommendations(user_id):
     user_profile = get_user_by_id(user_id)["user"]
     result = cluster.query(
         """SELECT * FROM `blog-recommender`.`inventory`.`blog`
-            WHERE category IN $preferences AND id NOT IN $history""",
+            WHERE topic IN $topics AND blog_id NOT IN $history""",
         QueryOptions(
             named_parameters={
-                "preferences": user_profile["preferences"],
+                "topics": user_profile["topics"],
                 "history": user_profile["history"],
             }
         ),
@@ -78,9 +78,9 @@ def get_recommendations(user_id):
 def update_preference(user_id, input):
     result = cluster.query(
         f"""UPDATE `blog-recommender`.`inventory`.`user` u
-            SET u.preferences = ARRAY_APPEND(u.preferences, "{input}")
-            WHERE u.id = {user_id}
-            RETURNING u.preferences;"""
+            SET u.topics = ARRAY_APPEND(u.topics, "{input}")
+            WHERE u.user_id = {user_id}
+            RETURNING u.topics;"""
     )
     try:
         return result
@@ -91,47 +91,45 @@ def update_preference(user_id, input):
 def seeding():
     users = {
         "user1": {
-            "id": 1,
-            "name": "human",
-            "preferences": ["technology", "cooking"],
+            "user_id": 1,
+            "topics": ["technology", "cooking"],
             "history": [1],
         },
         "user2": {
-            "id": 2,
-            "name": "alien",
-            "preferences": ["technology", "earth"],
+            "user_id": 2,
+            "topics": ["technology", "earth"],
             "history": [3],
         },
     }
     blogs = {
         "blog1": {
-            "id": 1,
+            "blog_id": 1,
             "title": "Latest Tech Trends",
-            "category": "technology",
+            "topic": "technology",
             "tags": ["AI", "ML", "innovation"],
         },
         "blog2": {
-            "id": 2,
+            "blog_id": 2,
             "title": "How to create your own pasta recipes",
-            "category": "cooking",
+            "topic": "cooking",
             "tags": ["pasta", "sauces"],
         },
         "blog3": {
-            "id": 3,
+            "blog_id": 3,
             "title": "Future of Earth",
-            "category": "earth",
+            "topic": "earth",
             "tags": ["global warming", "space exploration"],
         },
         "blog4": {
-            "id": 4,
+            "blog_id": 4,
             "title": "Understanding Arts",
-            "category": "arts",
+            "topic": "arts",
             "tags": ["visual arts", "perfomance arts"],
         },
         "blog5": {
-            "id": 5,
+            "blog_id": 5,
             "title": "Programming 101",
-            "category": "technology",
+            "topic": "technology",
             "tags": ["Python"],
         },
     }
