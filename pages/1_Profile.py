@@ -1,14 +1,19 @@
 import streamlit as st
 
 
+st.set_page_config(
+    page_title="Profile",
+    page_icon="👤",
+)
+
 if 'user_profile' in st.session_state:
     user_profile = st.session_state['user_profile']
 
-    st.title(f"Welcome to your profile, `{user_profile['name']}`")
+    st.title(f"Welcome to your profile")
 
     # Display preferences
     st.subheader('Your favorite topics:')
-    for p in user_profile['preferences']:
+    for p in user_profile['topics']:
         st.write(p)
 
     # Modify preferences
