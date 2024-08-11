@@ -36,6 +36,7 @@ def recommendations(user_id):
 
 @app.put("/users/{user_id}/")
 def preference(user_id, preference):
+    print(preference)
     return update_preference(user_id, preference)
 
 

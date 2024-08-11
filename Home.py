@@ -17,7 +17,7 @@ with st.popover("Quick 'login'"):
     st.markdown("Hello there 👋")
     id = st.text_input('What is your user id?')
     
-    if id:
+    if id and id.isdigit():
         response = requests.get(url=f"{os.environ.get("APP_URL")}/users/{id}")
         res = response.json()
         if "message" not in res:
@@ -32,8 +32,11 @@ if 'user_profile' in st.session_state:
     st.header('Read your favorite article right here!')
 
     if st.button('Get recommendations'):
-        res = requests.get(url=f"{os.environ.get("APP_URL")}/users/{id}/recommendations").json()
-        print('\ncurrent artilces\n', res)
-        for r in res:
-            article = r['blog']
-            st.subheader(article['title'])
+        response = requests.get(url=f"{os.environ.get("APP_URL")}/users/{id}/recommendations").json()
+        if response:
+            for r in response:
+                article = r["blog"]
+                st.image(article["blog_img"])
+                st.subheader(f"[{article["blog_title"]}]({article["blog_link"]})")
+                st.caption(article["topic"])
+                st.write(article["blog_content"])
