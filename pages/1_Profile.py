@@ -5,29 +5,43 @@ import streamlit as st
 
 load_dotenv()
 
+st.set_page_config(
+    page_title="Profile",
+    page_icon="👤",
+)
 
-if "user_profile" in st.session_state:
-    user_profile = st.session_state["user_profile"]
+@st.dialog("Notification")
+def noti():
+    st.balloons()
+    st.info(f"`{add}` has been added to your preferences!\nLog in again to see the difference")
+    if st.button("Okay"):
+        st.switch_page("Home.py")
+        
 
-    st.title(f"Welcome to your profile, `{user_profile['name']}`")
+if 'user_profile' in st.session_state:
+    user_profile = st.session_state['user_profile']
+    id = user_profile["user_id"]
+    preferences = user_profile["topics"]
+
+    st.title(f"Welcome to your profile")
 
     # Display preferences
-    st.subheader("Your favorite topics:")
-    for p in user_profile["preferences"]:
+    st.subheader('Your favorite topics:')
+    for p in user_profile['topics']:
         st.write(p)
 
     # Modify preferences
     add = st.text_input("Add to your preferences")
     if add:
-        response = requests.put(
-            url=f"{os.environ.get("APP_URL")}/users/{user_profile["id"]}/",
-            params={"preference": add}
-        )
-        if response.status_code == 200:
-            st.info(f"`{add}` has been added to your preferences!")
-            st.balloons()
+        if add in preferences:
+            st.error(f"`{add}` already exists!")
         else:
-            st.error("Error saving your preference")
-        
+            response = requests.put(
+                url=f"{os.environ.get("APP_URL")}/users/{id}/?preference={add}"
+            )
+            if response:
+                noti()
+            else:
+                st.error("An error has occurred. Try again!")
 else:
     st.error("You are not logged in!")
